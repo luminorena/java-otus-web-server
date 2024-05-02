@@ -1,5 +1,7 @@
 package ru.otus.luminorena.web.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.otus.luminorena.web.server.application.Storage;
 
 import java.io.IOException;
@@ -8,7 +10,8 @@ import java.net.Socket;
 
 public class HttpServer {
     private int port;
-    private ru.otus.luminorena.web.server.Dispatcher dispatcher;
+    private Dispatcher dispatcher;
+    private static final Logger logger = LogManager.getLogger(HttpServer.class.getName());
 
     public HttpServer(int port) {
         this.port = port;
@@ -16,9 +19,9 @@ public class HttpServer {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту: " + port);
+            logger.debug("Сервер запущен на порту:" + port);
             this.dispatcher = new ru.otus.luminorena.web.server.Dispatcher();
-            System.out.println("Диспетчер проинициализирован");
+            logger.debug("Диспетчер проинициализирован");
             Storage.init();
             while (true) {
                 try (Socket socket = serverSocket.accept()) {

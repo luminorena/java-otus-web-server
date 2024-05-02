@@ -11,18 +11,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class CreateNewProductProcessor implements RequestProcessor {
-    private static final Logger logger = LogManager.getLogger(CreateNewProductProcessor.class.getName());
+public class UpdateProductDataProcessor implements RequestProcessor{
+    private static final Logger logger = LogManager.getLogger(UpdateProductDataProcessor.class.getName());
     @Override
     public void execute(HttpRequest httpRequest, OutputStream output) throws IOException {
         Gson gson = new Gson();
         Item item = gson.fromJson(httpRequest.getBody(), Item.class);
-        Storage.save(item);
-        logger.debug("item has been saved");
         String jsonOutItem = gson.toJson(item);
         logger.debug(jsonOutItem);
-        String response = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" + jsonOutItem;
-        logger.info(response);
+        String errorMsg = "Id " + item.getId()  + " is not found";
+        String response;
+        try {
+            Storage.update(item);
+            response = "HTTP/1.1 201 Created\r\nContent-Type: application/json\r\n\r\n" + jsonOutItem;
+            logger.info(response);
+        } catch (RuntimeException e) {
+            response = "HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\n\r\n" + errorMsg;
+            logger.error(response);
+        }
         output.write(response.getBytes(StandardCharsets.UTF_8));
     }
+
 }

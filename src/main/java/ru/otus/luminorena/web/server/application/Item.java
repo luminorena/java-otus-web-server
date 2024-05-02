@@ -39,4 +39,33 @@ public class Item {
         this.title = title;
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Item item = (Item) o;
+
+        if (price != item.price) return false;
+        if (id != null ? !id.equals(item.id) : item.id != null) return false;
+        return title != null ? title.equals(item.title) : item.title == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + price;
+        return result;
+    }
 }

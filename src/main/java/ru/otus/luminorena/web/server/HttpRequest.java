@@ -1,5 +1,8 @@
 package ru.otus.luminorena.web.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +14,7 @@ public class HttpRequest {
     private ru.otus.luminorena.web.server.HttpMethod method;
     private Map<String, String> parameters;
     private String body;
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class.getName());
 
     public String getRouteKey() {
         return String.format("%s %s", method, uri);
@@ -35,7 +39,7 @@ public class HttpRequest {
     }
 
     public void tryToParseBody() {
-        if (method == ru.otus.luminorena.web.server.HttpMethod.POST) {
+        if (method == HttpMethod.POST || method == HttpMethod.PUT) {
             List<String> lines = rawRequest.lines().collect(Collectors.toList());
             int splitLine = -1;
             for (int i = 0; i < lines.size(); i++) {
@@ -81,11 +85,12 @@ public class HttpRequest {
 
     public void info(boolean showRawRequest) {
         if (showRawRequest) {
-            System.out.println(rawRequest);
+            logger.debug(rawRequest);
         }
-        System.out.println("URI: " + uri);
-        System.out.println("HTTP-method: " + method);
-        System.out.println("Parameters: " + parameters);
-        System.out.println("Body: " + body);
+        logger.info("URI: " + uri);
+        logger.info("HTTP-method: " + method);
+        logger.info("Parameters: " + parameters);
+        logger.info("Body: " + body);
+
     }
 }
