@@ -1,9 +1,6 @@
 package ru.otus.luminorena.web.server;
 
-import ru.otus.luminorena.web.server.processors.CalculatorRequestProcessor;
-import ru.otus.luminorena.web.server.processors.HelloWorldRequestProcessor;
-import ru.otus.luminorena.web.server.processors.RequestProcessor;
-import ru.otus.luminorena.web.server.processors.UnknownOperationRequestProcessor;
+import ru.otus.luminorena.web.server.application.processors.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,16 +13,19 @@ public class Dispatcher {
 
     public Dispatcher() {
         this.router = new HashMap<>();
-        this.router.put("/calc", new CalculatorRequestProcessor());
-        this.router.put("/hello", new HelloWorldRequestProcessor());
+        this.router.put("GET /calc", new CalculatorRequestProcessor());
+        this.router.put("GET /hello", new HelloWorldRequestProcessor());
+        this.router.put("GET /items", new GetAllProductsProcessor());
+        this.router.put("POST /items", new CreateNewProductProcessor());
+        this.router.put("PUT /products", new UpdateProductDataProcessor());
         this.unknownOperationRequestProcessor = new UnknownOperationRequestProcessor();
     }
 
     public void execute(HttpRequest httpRequest, OutputStream outputStream) throws IOException {
-        if (!router.containsKey(httpRequest.getUri())) {
+        if (!router.containsKey(httpRequest.getRouteKey())) {
             unknownOperationRequestProcessor.execute(httpRequest, outputStream);
             return;
         }
-        router.get(httpRequest.getUri()).execute(httpRequest, outputStream);
+        router.get(httpRequest.getRouteKey()).execute(httpRequest, outputStream);
     }
 }
